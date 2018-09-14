@@ -1,3 +1,6 @@
+##build
+
+##usage
 ```javascript
 const unlru = require("unnecessarily-native-lru").Factory({reserved:1024});
 
@@ -10,6 +13,4 @@ let metadata = unlru.meta("some/path/we/want/to/remember");
 
 //frees it from the cache. if there is no other references, the GC in node will eventually free it
 unlru.evict("some/path/we/want/to/remember"); 
-
-
 ```

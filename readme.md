@@ -1,6 +1,6 @@
-##build
+## build
 
-##usage
+## usage
 ```javascript
 const unlru = require("unnecessarily-native-lru").Factory({reserved:1024});
 

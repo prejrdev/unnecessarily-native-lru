@@ -544,7 +544,6 @@ namespace lru {
             //it needs monotonic implemented to provide tick timing
         private:
             T m_data;
-            monotonic::mono_t* mono;
             cache_metadata md;
         public:
             CacheDataWrapper(): m_data(){
@@ -552,26 +551,12 @@ namespace lru {
                 md.birth = 0;
                 md.last_access = md.birth;
             }
-
-            CacheDataWrapper(T data, monotonic::mono_t& time): m_data(data), mono(&time){
-                md.hits = 0;
-                md.birth = monotonic::now(*mono);
-                md.last_access = md.birth;
-            }
-
-            T data(T data){
-                return this->data(data, *mono);
-            }
-
+            
             T data(T data, monotonic::mono_t& time){
                 md.hits = md.hits + 1;
-                md.last_access = monotonic::increment(*mono);
+                md.last_access = monotonic::increment(time);
                 m_data = data;
                 return m_data;
-            }
-
-            T data(){
-                return data(*mono);
             }
 
             T data(monotonic::mono_t& time){

@@ -37,79 +37,6 @@ namespace lru {
         }
     };
 
-    namespace cache {
-
-        struct cache_metadata{
-            unsigned int hits;
-            unsigned long birth;        //birth in ticks
-            unsigned long last_access;   //last access in ticks
-        };
-
-        template<typename T>
-        class CacheDataWrapper {
-            //it needs monotonic implemented to provide tick timing
-        private:
-            T m_data;
-            monotonic::mono_t* mono;
-            cache_metadata md;
-        public:
-            CacheDataWrapper(): m_data(){
-                md.hits = 0;
-                md.birth = 0;
-                md.last_access = md.birth;
-            }
-
-            CacheDataWrapper(T data, monotonic::mono_t& time): m_data(data), mono(&time){
-                md.hits = 0;
-                md.birth = monotonic::now(*mono);
-                md.last_access = md.birth;
-            }
-
-            T data(T data){
-                return this->data(data, *mono);
-            }
-
-            T data(T data, monotonic::mono_t& time){
-                md.hits = md.hits + 1;
-                md.last_access = monotonic::increment(*mono);
-                m_data = data;
-                return m_data;
-            }
-
-            T data(){
-                return data(*mono);
-            }
-
-            T data(monotonic::mono_t& time){
-                md.hits = md.hits + 1;
-                md.last_access = monotonic::increment(time);
-                return m_data;
-            }
-
-            T inspect(){
-                return m_data;
-            }
-
-            T inspect(T data){
-                this->m_data = data;
-                return m_data;
-            }
-
-            const cache_metadata meta(){return md;}
-
-        };
-
-        template<typename KeyType, typename ValueType> class LRU{
-        private:
-            std::unordered_map<KeyType, CacheDataWrapper<ValueType>*> map;
-            monotonic::mono_t time;
-        protected:
-
-        public:
-
-        };
-    }
-
     namespace pool {
         template<typename T>
         class Node;
@@ -603,5 +530,148 @@ namespace lru {
 
 
     };
+
+    namespace cache {
+
+        struct cache_metadata{
+            unsigned int hits;
+            unsigned long birth;        //birth in ticks
+            unsigned long last_access;   //last access in ticks
+        };
+
+        template<typename T>
+        class CacheDataWrapper {
+            //it needs monotonic implemented to provide tick timing
+        private:
+            T m_data;
+            monotonic::mono_t* mono;
+            cache_metadata md;
+        public:
+            CacheDataWrapper(): m_data(){
+                md.hits = 0;
+                md.birth = 0;
+                md.last_access = md.birth;
+            }
+
+            CacheDataWrapper(T data, monotonic::mono_t& time): m_data(data), mono(&time){
+                md.hits = 0;
+                md.birth = monotonic::now(*mono);
+                md.last_access = md.birth;
+            }
+
+            T data(T data){
+                return this->data(data, *mono);
+            }
+
+            T data(T data, monotonic::mono_t& time){
+                md.hits = md.hits + 1;
+                md.last_access = monotonic::increment(*mono);
+                m_data = data;
+                return m_data;
+            }
+
+            T data(){
+                return data(*mono);
+            }
+
+            T data(monotonic::mono_t& time){
+                md.hits = md.hits + 1;
+                md.last_access = monotonic::increment(time);
+                return m_data;
+            }
+
+            T inspect(){
+                return m_data;
+            }
+
+            T inspect(T data){
+                this->m_data = data;
+                return m_data;
+            }
+
+            const cache_metadata meta(){return md;}
+
+        };
+
+        template<typename KeyType, typename ValueType> class LRU{
+        private:
+            struct node_type;
+
+            struct common_type_t{
+                std::unique_ptr<KeyType> key;
+                std::unique_ptr<node_type> node;
+            };
+
+            typedef std::unordered_map<KeyType, common_type_t> Map;
+            typedef typename Map::iterator MapIterator;
+
+            struct node_type{
+                std::unique_ptr<CacheDataWrapper<ValueType>> value;
+                MapIterator it;
+                pool::Node<node_type>* node;
+            };
+
+            Map map;
+            monotonic::mono_t time;
+
+            //all operations on these two guys are on the node<T> types. Node<T> type contains information
+            //to facilitate
+            pool::Pool<node_type> pool;
+            pool::LinkedList<node_type> list;
+        protected:
+
+            //NOTE: in v8, they don't want us to allocate things in the heap because the pointer handlers
+            //to things that live within v8 requires semantics that arises when they are being dealt with
+            //through the stack (like invoking a destructor when the stack exist upon the program counter
+            //leaving the function).
+
+
+            ValueType force_evict(){
+                //NOTE: this is the basis of the eviction semantic. it just simply evict the last node in our
+                //linked list because the last node will always be the node that was least used. the implementation of
+                //eviction algorithm cant make any other decisions about removal (such as considering hits/last_accessed
+                //time) since it needs to remove from cache an entry to create room for another entry to be placed
+                //in cache.
+                if(list.tail() != nullptr){
+
+                }
+                return ValueType();
+            }
+
+            void a(const KeyType key, ValueType value){
+
+                pool::Node<node_type>* nt = pool.allocate();
+            }
+
+
+
+        public:
+
+            LRU(size_t reservedSize): pool(reservedSize), map(reservedSize){
+
+            }
+
+
+            ValueType* get(const KeyType& key){
+                return nullptr;
+            }
+
+            ValueType* set(const KeyType& key, ValueType& value){
+                return nullptr;
+            }
+
+            ValueType* evict(const KeyType& key){
+                return nullptr;
+            }
+
+            const cache_metadata metadata(const KeyType& key){
+
+            }
+
+
+
+        };
+    }
+
 }
 #endif //UNNECESSARILY_NATIVE_LRU_LRU_H

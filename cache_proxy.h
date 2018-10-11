@@ -26,6 +26,10 @@ namespace unlru{
             }
         };
 
+        /**
+         * each instance of TimeAcesssor keeps track of how many times and when the
+         * underlying type is accesssed. 
+         */
         template <typename Type> class TimedAccessor{
         private:
             Metadata_t md;

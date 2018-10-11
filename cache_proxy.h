@@ -40,6 +40,30 @@ namespace unlru{
                 md.hits = 0;
             }
 
+            TimedAccessor(TimedAccessor const &) = delete;
+            TimedAccessor& operator=(TimedAccessor& other) = delete;
+
+
+            TimedAccessor(TimedAccessor&& other) noexcept{
+                md.last = other.md.last;
+                md.birth = other.md.birth;
+                md.hits = other.md.hits;
+                other.md.reset();
+
+                pointer = other.pointer;
+                other.pointer = nullptr;
+            }
+
+            TimedAccessor& operator=(TimedAccessor&& other) noexcept {
+                md.last = other.md.last;
+                md.birth = other.md.birth;
+                md.hits = other.md.hits;
+                other.md.reset();
+
+                pointer = other.pointer;
+                other.pointer = nullptr;
+            }
+
             ~TimedAccessor(){
                 if(pointer != nullptr){
                     delete pointer;

@@ -17,7 +17,7 @@ obj = null;
 let metadata = cache.meta("some/path/we/want/to/remember");
 //Metadata { last: 1, birth: 0, hits: 1 }
 
-metadata instanceof unlru.MetadataObject;
+metadata instanceof unlru.metadata;
 //true
 
 let itdoesntexist = cache.meta("some/path/we/want/to/remember/but/not/in/cache");

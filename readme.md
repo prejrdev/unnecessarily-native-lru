@@ -2,28 +2,44 @@
 
 ## usage
 ```javascript
-//create a cache that has upto 1024 slots. 
-const unlru = require("unnecessarily-native-lru").Factory({reserved:1024});
+const unlru = require("unnecessarily-native-lru");
 
-unlru.set("some/path/we/want/to/remember", {foo: "bar"});
-unlru.set("some-other/path/we/want/to/remember", {bar: "foo"});
+//create a cache that has upto 1024 slots
+const cache = unlru.Factory({reserved: 1024});
 
-let obj = unlru.get("some/path/we/want/to/remember");
+cache.set("some/path/we/want/to/remember", {foo: "bar"});
+cache.set("some-other/path/we/want/to/remember", {bar: "foo"});
 
-let metadata = unlru.meta("some/path/we/want/to/remember");
-//metadata = {hits: 2, birth: 0, lastaccessed: 2};
+let obj = cache.get("some/path/we/want/to/remember");
+//obj = {foo: "bar"}
+obj = null; 
+
+let metadata = cache.meta("some/path/we/want/to/remember");
+//Metadata { last: 1, birth: 0, hits: 1 }
+
+metadata instanceof unlru.MetadataObject;
+//true
+
+let itdoesntexist = cache.meta("some/path/we/want/to/remember/but/not/in/cache");
+//null
 
 //frees it from the cache and removes references to that object. if no other variable references the
-//object, it tells v8 to remove the handle.
-unlru.evict("some/path/we/want/to/remember"); 
+//object, it tells v8 that it is okay to remove it.
+cache.evict("some/path/we/want/to/remember"); 
 
-//this variation weakly evicts the entry, that is it doesn't remove the entry in cache
+cache.get("some/path/we/want/to/remember");
+//returns undefined
+
+//this variation weakly evicts the entry, that is, it doesn't remove the entry in cache
 //until the v8 GC removes it, and then the cache record is invalidated.
-unlru.evict("some-other/path/we/want/to/remember", true);
+cache.evict("some-other/path/we/want/to/remember", true);
 
 //as long as the GC didn't collect, the cache record is still accessible.
-unlru.get("some-other/path/we/want/to/remember"); 
+cache.get("some-other/path/we/want/to/remember"); 
 //returns {bar: "foo"}
 
+//and there is also
+cache.clear();
+//which removes its references to all of the underlying JS objects (which if no other refences are held, the GC would eventually collect those objects), and invalidates the whole cache.
 
 ```

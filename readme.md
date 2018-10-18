@@ -5,7 +5,10 @@
 const unlru = require("unnecessarily-native-lru");
 
 //create a cache that has upto 1024 slots
-const cache = unlru.Factory({reserved: 1024});
+let cache = unlru.Factory({reserved: 1024});
+
+//or
+cache = new unlru.lru({reserved: 12});
 
 cache.set("some/path/we/want/to/remember", {foo: "bar"});
 cache.set("some-other/path/we/want/to/remember", {bar: "foo"});

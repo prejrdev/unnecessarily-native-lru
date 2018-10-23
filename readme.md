@@ -43,8 +43,7 @@ cache.get("some-other/path/we/want/to/remember");
 
 //and there is also
 cache.clear();
-//which removes its references to all of the underlying JS objects 
-//(which if no other refences are held, the GC would eventually collect those objects), 
-//and invalidates the whole cache.
+//which invalidates the whole cache and removes its references to all of the underlying JS objects 
+//(if no other refences are held, the GC could eventually collect those objects).
 
 ```

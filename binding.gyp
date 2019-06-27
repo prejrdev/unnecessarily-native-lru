@@ -1,7 +1,7 @@
 {
   "targets": [
     {
-      "target_name": "unlru",
+      "target_name": "unncessarily-native-lru",
       "defines": [ 'BUILD_W_METADATA', 'NDEBUG'],
       "sources": [
         "src/unlru.cc",

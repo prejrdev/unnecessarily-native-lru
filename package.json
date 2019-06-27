@@ -1,0 +1,23 @@
+{
+  "name": "unlru",
+  "version": "0.1.0",
+  "description": "an unnecessarily native LRU cache for nodejs",
+  "main": "unncessarily-native-lru.js",
+  "scripts": {
+    "test": "node lru.test.js",
+    "build": "node-gyp build",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ok"
+  },
+  "keywords": [
+    "cache",
+    "native",
+    "lru"
+  ],
+  "author": "michael <prejrdev@gmail.com>",
+  "license": "GPL-3.0",
+  "gypfile": true
+}

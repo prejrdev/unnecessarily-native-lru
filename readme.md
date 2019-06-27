@@ -1,6 +1,15 @@
-## build
+# Unnecesarily native Least Recently Used Cache
+ > B-bu-but can't we just implement a linked list in js and use the built in map instead?
+ 
+ 
+### Use cases
+ 1. you can use it to support ephemeral sessions that are specific and bounded to your process.
+ 2. you can use it as cache for serving static assets through your node process.
+ 3. you want a cache system that works with v8 garbage collector where if the object isnt visible to the environment, and gc collects it, the cache invalidates its record. 
 
-## usage
+### install and build
+
+### usage
 ```javascript
 const unlru = require("unnecessarily-native-lru");
 

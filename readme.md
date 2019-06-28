@@ -1,5 +1,5 @@
 # Unnecesarily native Least Recently Used Cache
- > B-bu-but can't we just implement a linked list in js and use the built in map instead?
+ > But can't we just implement a linked list in js and use the built in map instead?
  
  
 ### Use cases
